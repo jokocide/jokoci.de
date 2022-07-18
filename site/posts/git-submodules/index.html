@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon"
+          href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/google/274/castle_1f3f0.png" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+
+    <!-- JS -->
+    <script src="/static/js/main.js"></script>
+
+    <!-- Meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+
+    <title>Jokoci.de</title>
+
+</head>
+
+<body>
+
+<div class="nav-container">
+<nav id="nav">
+    <div id="nav-1">
+    </div>
+    <div id="nav-2">
+        <a id="name" href="/">Jokoci.de</a>
+        <a href="mailto:jokocide@outlook.com">Mail</a>
+        <a href="https://github.com/jokocide">Github</a>
+        <a href="#" onclick="toggle()">
+            <button>Theme</button>
+        </a>
+    </div>
+    <div id="nav-2">
+    </div>
+</nav></div>
+
+<div class="base-container">
+
+<header>
+    <h1>Organizing code with Git submodules, and avoiding some pitfalls</h1>
+</header>
+
+<main>
+    <article>
+        <p>The <a href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">documentation</a> on this topic is a little intimidating at first glance. I was not able to find a quick start for this tool anywhere on the web, so here is an abridged introduction in my own words.</p>
+<h2>Add a submodule to your project</h2>
+<p>Lets say you have two projects, <strong>tornado</strong> and <strong>wind</strong>. Both of these projects are their own Git repositories.</p>
+<p>One day you find yourself working on <strong>tornado</strong> and you realize that it will be necessary to include <strong>wind</strong>
+as a part of <strong>tornado</strong> when it comes time to package the software.</p>
+<pre><code class="language-pwsh">git submodule add https://github.com/you/wind
+</code></pre>
+<p>You've just cloned <strong>wind</strong>, and you should be able to see that in your current directory. If you want the submodule to exist
+in a different directory you can provide the path as the final argument. In this case, the submodule is cloned to <strong>.\src\wind</strong>
+instead of your current directory.</p>
+<pre><code class="language-pwsh">git submodule add https://github.com/you/wind .\src\wind
+</code></pre>
+<p>As you might expect, adding a submodule this way doesn't just clone the repository. It also scaffolds out a <strong>.gitmodules</strong>
+file for you. This file contains the information that allows git to remember what submodules are associated
+with this project, and where they are supposed to be located.</p>
+<h2>Verify .gitmodules</h2>
+<p>It is always a good idea to review the <strong>.gitmodules</strong> file after this step, in certain cases the path key of the new entry
+can be generated in a way that prevents git from correctly evaluating the path.</p>
+<pre><code class="language-pwsh">[submodule &quot;.\src\wind&quot;]
+	path = .\src\wind
+	url = https://github.com/you/wind
+</code></pre>
+<p>The path key shown above will not work, but this can easily be corrected.</p>
+<pre><code class="language-pwsh">[submodule &quot;.\src\wind&quot;]
+	path = src/wind
+	url = https://github.com/you/wind
+</code></pre>
+<p>I originally suspected this to be a Windows issue, but encountered the same problem on macOS later.</p>
+<h2>Commit &amp; push</h2>
+<p>Finish setting up this submodule by committing your changes. Run a <strong>git status</strong> and you should see something along these lines.</p>
+<pre><code class="language-pwsh">On branch master
+Your branch is up-to-date with 'origin/master'.
+
+Changes to be committed:
+  (use &quot;git reset HEAD &lt;file&gt;...&quot; to unstage)
+
+	new file:   .gitmodules
+	new file:   src/wind
+</code></pre>
+<p>These two new files are version controlled just like the rest of your project, so go ahead and commit them.</p>
+<pre><code class="language-pwsh"> git commit -am 'Add wind submodule'
+</code></pre>
+<p>And don't forget to push the changes.</p>
+<pre><code class="language-pwsh">git push origin master
+</code></pre>
+<h2>Clone a project with submodules</h2>
+<p>Now, when you find yourself at a different machine and ready to work on project <strong>tornado</strong>, you might
+start by cloning the project.</p>
+<pre><code class="language-pwsh">git clone https://github.com/you/tornado
+</code></pre>
+<p>You will quickly realize that while the src/wind directory does exist, it is empty. Two commands are available to help populate this
+directory with the actual contents of your submodule. The first one exists to initialize your configuration file.</p>
+<pre><code class="language-pwsh">git submodule init
+</code></pre>
+<p>The second command will read that initialized configuration file and actually do the work of pulling in the correct files.</p>
+<pre><code class="language-pwsh">git submodule update
+</code></pre>
+<p>You can combine those three steps into one by passing the --recurse-submodules flag to the clone command.</p>
+<pre><code class="language-pwsh">git clone --recurse-submodules https://github.com/you/tornado
+</code></pre>
+
+    </article>
+</main>
+
+</div>
+
+</body>
+
+</html>

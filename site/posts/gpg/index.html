@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon"
+          href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/google/274/castle_1f3f0.png" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+
+    <!-- JS -->
+    <script src="/static/js/main.js"></script>
+
+    <!-- Meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+
+    <title>Jokoci.de</title>
+
+</head>
+
+<body>
+
+<div class="nav-container">
+<nav id="nav">
+    <div id="nav-1">
+    </div>
+    <div id="nav-2">
+        <a id="name" href="/">Jokoci.de</a>
+        <a href="mailto:jokocide@outlook.com">Mail</a>
+        <a href="https://github.com/jokocide">Github</a>
+        <a href="#" onclick="toggle()">
+            <button>Theme</button>
+        </a>
+    </div>
+    <div id="nav-2">
+    </div>
+</nav></div>
+
+<div class="base-container">
+
+<header>
+    <h1>A brief guide to encrypting and decrypting with GPG</h1>
+</header>
+
+<main>
+    <article>
+        <p>GPG is a tool that you can use to encrypt and decrypt messages, among other things. Many guides exist to provide a highly detailed
+introduction to this tool and encryption as a whole, so here is one that serves more as a reference guide for those of us that have
+some experience with the software already</p>
+<h2>Creating keys</h2>
+<p>To begin, you need to create your keys.</p>
+<pre><code class="language-sh">&gt; gpg --full-gen-key
+</code></pre>
+<p>Follow the prompts and your keys will be created and added to your keyring -- unless you have a reason not to, go with the defaults.</p>
+<h2>Encrypting</h2>
+<p>In our current directory, we have a text file called <strong>message</strong> that happens to contain a secret.</p>
+<pre><code class="language-sh">&gt; ls -l
+total 16
+-rw-r--r--  1 jkoenig  staff    22 Dec  4 09:33 message
+
+&gt; cat message
+37.2431° N, 115.7930° W
+</code></pre>
+<p>We can use the <strong>-r</strong> and <strong>-e</strong> options to encrypt the file.</p>
+<pre><code class="language-sh">&gt; gpg -r jokocide@outlook.com -e message
+&gt; ls -l
+total 24
+-rw-r--r--  1 jkoenig  staff    22 Dec  4 09:33 message
+-rw-r--r--  1 jkoenig  staff   488 Dec  4 09:37 message.gpg
+</code></pre>
+<p>You can see a new file <strong>message.gpg</strong> now exists, which represents our encrypted message.</p>
+<p>Remember that deleting the file will most likely leave some form of <a href="https://en.wikipedia.org/wiki/Data_remanence">data remanence</a>,
+so you will want to take steps to counter that.</p>
+<h2>Decrypting</h2>
+<p>To decrypt our file and make it human readable again, the <strong>-d</strong> option is used.</p>
+<pre><code class="language-sh">&gt; gpg -d message.gpg
+
+gpg: encrypted with 3072-bit RSA key, ID xxxxxxxxxxxx, created 2020-12-02
+&quot;Jon Koenig &lt;jokocide@outlook.com&gt;&quot;
+
+37.2431° N, 115.7930° W
+</code></pre>
+<p>Enter the key's password and the contents of the file will be printed out on your console. Your password will be cached to make decrypting multiple files at
+once a less painful process, and that can be security concern. Thanksfully this can be <a href="https://forums.linuxmint.com/viewtopic.php?t=254042">changed</a>!</p>
+
+    </article>
+</main>
+
+</div>
+
+</body>
+
+</html>

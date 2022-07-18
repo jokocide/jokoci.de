@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon"
+          href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/google/274/castle_1f3f0.png" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+
+    <!-- JS -->
+    <script src="/static/js/main.js"></script>
+
+    <!-- Meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+
+    <title>Jokoci.de</title>
+
+</head>
+
+<body>
+
+<div class="nav-container">
+<nav id="nav">
+    <div id="nav-1">
+    </div>
+    <div id="nav-2">
+        <a id="name" href="/">Jokoci.de</a>
+        <a href="mailto:jokocide@outlook.com">Mail</a>
+        <a href="https://github.com/jokocide">Github</a>
+        <a href="#" onclick="toggle()">
+            <button>Theme</button>
+        </a>
+    </div>
+    <div id="nav-2">
+    </div>
+</nav></div>
+
+<div class="base-container">
+
+<header>
+    <h1>Managing infrastructure with Ansible</h1>
+</header>
+
+<main>
+    <article>
+        <p>Ansible is a software deployment tool that you can use to set up your home server. You will organize commands into <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html">playbooks</a> and run them against <a href="https://docs.ansible.com/ansible/latest/network/getting_started/basic_concepts.html#managed-nodes">managed nodes</a> from a <a href="https://docs.ansible.com/ansible/latest/network/getting_started/basic_concepts.html#control-node">control node</a>. The control node can be a device running macOS or a linux distribution. Windows is not directly supported, so WSL2 or a virtual machine is required.</p>
+<p>Creating an Ansible playbook is not the shortest process. We will be starting with an empty folder and ending with a functional playbook, however my use case for Ansible consists of managing a very small number of devices, so this will not be the most in-depth guide. The goal is to be concise for the average person, and the information in this document will be expanded upon over time as my needs change.</p>
+<h2>Inventory</h2>
+<p>The first file that we will create is an <strong>inventory</strong> file. It will define the hosts, or <strong>managed nodes</strong> that we will be targeting. You will put information about your home server in here.</p>
+<p>The inventory file can be extremely simple. Here we are defining a single host, and specifying that it can be found at 10.0.0.60 on our local network.</p>
+<pre><code class="language-sh">all:
+  hosts:
+      10.0.0.60
+</code></pre>
+<p>You can give your host an alias, but you will need to include some variables below it to provide the important information.</p>
+<pre><code class="language-sh">all:
+  hosts:
+      my-server:
+        ansible_host: 10.0.0.60
+        ansible_port: 22
+        ansible_user: guy
+        ansible_connection: ssh
+        ansible_ssh_private_key_file: /Users/guy/.ssh/my-server
+</code></pre>
+<p>You can organize hosts into groups and execute a playbook on all of the hosts in that group at once, so it is worth giving this some thought. I will just be adding a single host to a group called <strong>servers</strong>.</p>
+<pre><code class="language-sh">all:
+  children:
+    servers:
+      hosts:
+        my-server:
+          ansible_port: 22
+          ansible_host: 10.0.0.60
+          ansible_user: guy
+          ansible_connection: ssh
+          ansible_ssh_private_key_file: /Users/guy/.ssh/my-server
+</code></pre>
+<p>Looking above, we see that every host that we create is a member of the <strong>all</strong> group by default. The <strong>children</strong> keyword is used to create sub-groups. By organizing the file this way, we are telling Ansible that <strong>servers</strong> is a sub-group of <strong>all</strong>.</p>
+<h2>Configuration</h2>
+<p>Ansible will need you to specify a path to an inventory file with the <strong>-i</strong> argument, or it will not understand where to find your hosts.</p>
+<p>I find it preferable to create an <strong>ansible.cfg</strong> file in the root of the project directory with a couple lines that will allow Ansible to find our inventory automatically.</p>
+<pre><code class="language-sh">[defaults]
+INVENTORY = inventory.yml
+</code></pre>
+<p>With this configuration, Ansible will look for a file called <strong>inventory.yml</strong> in the current directory when it needs to find information on a host.</p>
+<p>Ansible will search for a configuration file in these directories, and in this order:</p>
+<ul>
+<li>ANSIBLE_CONFIG (environment variable if set)</li>
+<li>./ansible.cfg (current directory)</li>
+<li>~/.ansible.cfg (home directory)</li>
+<li>/etc/ansible/ansible.cfg</li>
+</ul>
+<h2>Tasks</h2>
+<p>Tasks are small sets of instructions that allow Ansible to understand how an action is performed. We will write a task to disable password-based SSH authentication on our host.</p>
+<pre><code>- name: Disable SSH password authentication
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: &quot;^#PasswordAuthentication yes&quot;
+    line: &quot;PasswordAuthentication no&quot;
+  register: sshd_config
+</code></pre>
+<p>In the first line, we define an arbitrary name for the task.</p>
+<p>Next, we call a <a href="https://docs.ansible.com/ansible/latest/user_guide/modules_intro.html">module</a> by name. A module is a reusable script that tells Ansible how to perform an action. If we refer to the Ansible wiki and read the module's synopsis, it is described as being useful &quot;primarily useful when you want to change a single line in a file only.&quot;</p>
+<p>Modules will almost always have some parameters that you must provide. Checking the appropriate section in the <a href="https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html#parameters">documentation</a> is the easiest way to determine what you need, just look for the parameters that say <strong>required</strong> in red text.</p>
+<p>This module happens to be built in to Ansible, but in the event that you need functionality from a module that is not built in, you can often find what you need on <a href="https://galaxy.ansible.com">Ansible Galaxy</a>.</p>
+<p>A task to enable password-less sudo can look something like this:</p>
+<pre><code>- name: Enable passwordless sudo for &quot;{{ username }}&quot;
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: &quot;^%wheel&quot;
+    line: &quot;{{ username }} ALL=(ALL) NOPASSWD: ALL&quot;
+    validate: &quot;/usr/sbin/visudo -cf %s&quot;
+</code></pre>
+<p>The {{ username }} part is a variable, more on those soon.</p>
+<h2>Playbooks</h2>
+<p>A playbook is a group of tasks in the same file. If the two tasks we have just written are both in a file called <strong>ssh.yml</strong>, that would make it a playbook. We can now create another file called <strong>run.yml</strong> that looks something like this:</p>
+<pre><code>- name: Configure SSH
+  hosts: all
+  become: yes
+  tasks:
+    - import_tasks: tasks/ssh.yml
+</code></pre>
+<p>Keep in mind, this is still a task. It just happens to load and execute other tasks from our <strong>ssh.yml</strong> file. Splitting tasks up and placing them in their own files with other related tasks is a common practice, and makes it easier to reason about your project.</p>
+<p>If we had another playbook called <strong>environment.yml</strong> we can include those in our <strong>run.yml</strong> playbook as well, and it might look like this:</p>
+<pre><code>- name: Configure SSH
+  hosts: all
+  become: yes
+  tasks:
+    - import_tasks: tasks/ssh.yml
+
+- name: Set environment
+  hosts: all
+  become: yes
+  tasks:
+    - import_tasks: tasks/environment.yml
+</code></pre>
+<p>The <strong>hosts: all</strong> line means that Ansible should run these tasks on all of the hosts found in your inventory file.</p>
+<h2>Variables</h2>
+<p>Ansible allows you to create <strong>host</strong> and <strong>group</strong> variables, the former being available only to that host and the latter being available for any host within that group.</p>
+<p>Consider a scenario where you have an inventory file with this host in it:</p>
+<pre><code class="language-sh">all:
+  children:
+    dallas:
+      hosts:
+        dallas01:
+          ansible_port: 22
+          ansible_host: 10.0.0.107
+          ansible_user: guy
+          ansible_connection: ssh
+          ansible_ssh_private_key_file: /Users/guy/.ssh/dallas01
+</code></pre>
+<p>Ansible will look in the following files when it needs to find variables for the <strong>dallas01</strong> host.</p>
+<ul>
+<li>./group_vars/dallas.yml</li>
+<li>./host_vars/dallas01.yml</li>
+</ul>
+<p>Host <strong>dallas01</strong> not only has its own host variables file, but it is a member of the dallas group and therefore has access to the dallas group variables as well.</p>
+<p>You can also include variables directly in a playbook, or inject them during the play.</p>
+<pre><code class="language-sh">- hosts: all
+  vars:
+    favcolor: blue
+  vars_files:
+    - /vars/private.yml.yml
+
+  tasks:
+    - import_tasks: tasks/environment.yml
+</code></pre>
+<h2>Storing Private Data</h2>
+<p>There are a few strategies for safeguarding your private data. In my case, I have created a new directory called <strong>vars,</strong> which contains a <strong>private.yml</strong> file which contains my private variables.</p>
+<pre><code class="language-sh">private_access_token: &quot;ghp_realtoken&quot;
+</code></pre>
+<p>I have private information in this <strong>private.yml</strong> file and also in my inventory file, <strong>hosts.yml,</strong> from earlier. I'll add both of these files to the .gitignore at the root of my project, so it now looks like this:</p>
+<pre><code class="language-sh">hosts.yml
+vars/private.yml
+</code></pre>
+<p>Next, I create example files in place of the real ones. I start by creating a <strong>private_example.yml</strong> right next to the <strong>private.yml</strong>. These example files will be added to the repository.</p>
+<pre><code class="language-sh">personal_access_token: &quot;PAT&quot;
+</code></pre>
+<p>I do the same with my inventory file by creating a <strong>hosts_example.yml</strong> at the root of my project, right next to the original.</p>
+<pre><code class="language-sh">all:
+  children:
+    servers:
+      hosts:
+        host-alias:
+          ansible_port: example_port
+          ansible_host: example_ip
+          ansible_user: example_user
+          ansible_connection: example_connection_type
+          ansible_ssh_private_key_file: example_absolute_path_to_ssh_private_key
+</code></pre>
+<p>Now when I clone my project later down the road, it will be trivial to recall what files I need to create and populate with real information to get my playbooks working again.</p>
+<p>Simply create a file with a name identical to the example file, but without the _example part, and then copy the data from the example to the real file and populate the variables with real data.</p>
+<p>I also feel it is worth mentioning <a href="https://docs.ansible.com/ansible/latest/user_guide/vault.html">Ansible Vault</a>. This is a built-in tool that allows you to encrypt files that contain sensitive data. I personally do not use this tool, so refer to the documentation if you are interested in this solution.</p>
+
+    </article>
+</main>
+
+</div>
+
+</body>
+
+</html>

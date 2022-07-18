@@ -1,0 +1,32 @@
+﻿{{> header }}
+
+<header>
+    <h1 id="hi">Joko's Blog</h1>
+</header>
+
+<main>
+    <article>
+        <div id="index-intro-container">
+            <h3>Hello! I'm Jonathan Koenig.</h3>
+            <p>
+                I'm a programmer, and I've worked in the IT industry for about 2 years now.
+                This is a personal blog where I write educational articles about software development and
+                other interesting stuff. 👍
+            </p>
+        </div>
+
+        <div id="index-posts-container">
+            <h1>Articles</h1>
+            <ul>
+                {{ #each posts }}
+                <li>
+                    <a href="{{ link }}">{{ title }}</a>
+                    <p>{{ date }}</p>
+                </li>
+                {{ /each }}
+            </ul>
+        </div>
+    </article>
+</main>
+
+{{> footer }}
