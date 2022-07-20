@@ -7,7 +7,7 @@ function toggle() {
     localStorage.removeItem('theme');
     let currentBackground = window.getComputedStyle(body).backgroundColor;
 
-    if (currentBackground == "rgb(32, 30, 30)") {
+    if (currentBackground == "rgb(40, 42, 45)") {
         apply(0);
         localStorage.setItem("theme", 0);
     } else {

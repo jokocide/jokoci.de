@@ -1,119 +1,115 @@
 @charset "UTF-8";
 
 :root {
-    --radius: 0.1em;
-    --red: rgba(190, 55, 55, 1);
-    --link: rgb(49, 110, 196);
-}
-
-:root.dark {
-    --bg: rgba(32, 30, 30);
-    --font: rgba(246, 246, 246);
-}
-
-:root.light {
-    --bg: rgb(255, 255, 255);
-    --font: rgb(28, 28, 28);
-}
-
-html {
+    --color-bg-dark: rgb(40, 42, 45);
+    --color-bg-dark-match: rgb(46, 48, 50);
+    --color-bg-light: rgb(255, 255, 255);
+    --color-bg-light-match: rgb(248, 248, 248);
+    --color-bg-blend: rgba(117, 117, 117, 0.185);
+    --color-main: rgb(47, 97, 67);
+    --color-link: rgb(70, 119, 188);
+    --variable-object-radius: 12px;
     overflow-y: scroll;
     font-family: Helvetica, Arial, sans-serif;
+    font-size: 16px;
     -webkit-font-smoothing: antialiased;
 }
 
+:root.dark {
+    --bg: var(--color-bg-dark);
+    --font: var(--color-bg-light-match);
+    --term: var(--color-bg-dark-match);
+}
+
+:root.light {
+    --bg: var(--color-bg-light);
+    --font: var(--color-bg-dark-match);
+    --term: var(--color-bg-light-match);
+}
+
 body {
-    font-size: 1.02em;
     background: var(--bg);
     color: var(--font);
-    padding: 0;
-    margin: 40px auto 0 auto;
+    margin-top: 40px;
 }
 
 main {
     width: 90%;
-    max-width: 60em;
-    border-top: 1px solid rgb(100, 100, 100);
+    max-width: 1200px;
+    border-top: 1px solid var(--color-blend);
     margin: auto;
 }
 
 a {
-    color: var(--link);
+    color: var(--color-link);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 button {
-    border-radius: 12px;
+    border-radius: var(--variable-object-radius);
     padding: 3px 13px;
     background: var(--font);
     color: var(--bg);
-    font-size: inherit;
     border: none;
-    border-color: #d6d6d6;
     min-width: 20px;
-    border-width: 1px;
-    border-style: solid;
     cursor: pointer;
     text-align: center;
     white-space: nowrap;
 }
 
-@supports (-webkit-backdrop-filter: saturate(1.8) blur(20px)) or
-  (backdrop-filter: saturate(1.8) blur(20px)) {
-  #nav {
-    /* background-color: var(--nav-background); */
-    backdrop-filter: saturate(1.8) blur(17px);
-    -webkit-backdrop-filter: saturate(1.8) blur(17px);
-  }
-}
-
-#nav {
+nav {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.80);
-    border-bottom: 1px solid rgba(227, 227, 227, 0.7);
+    background: rgb(255, 255, 255);
+    border-bottom: 1px solid rgba(238, 238, 238, 0.7);
     height: 52px;
     inset: 0px;
-    transition: background-color 0.5s cubic-bezier(0.28, 0.11, 0.32, 1) 0s, backdrop-filter, -webkit-backdrop-filter;
 }
 
-#nav * {
+@supports (-webkit-backdrop-filter: saturate(1.8) blur(20px)) or
+  (backdrop-filter: saturate(1.8) blur(20px)) {
+  nav {
+    backdrop-filter: saturate(1.8) blur(17px);
+    -webkit-backdrop-filter: saturate(1.8) blur(17px);
+    background: rgba(255, 255, 255, 0.80);
+  }
+}
+
+nav * {
+    font-size: 14px;
     text-transform: uppercase;
 }
 
-#nav #name {
-    color: var(--red);
+nav #name {
+    color: var(--color-main);
 }
 
-#nav a {
-    text-decoration: none;
+nav a {
     padding: 13px;
     color: black;
 }
 
-#nav a:hover {
-    text-decoration: underline;
-}
-
-.highlight {
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-pre { 
-    background: rgb(15, 15, 15);
-    border: 2px solid rgb(44, 44, 44);
-    color: white;
-    font-size: 1.2em;
-    padding: 7px 14px;
-    border-radius: var(--radius);
-    max-width: 80%;
-    white-space: pre-wrap;
+pre {
+    font-size: .95em;
+    background: var(--bg);
+    border-top: 3px solid var(--color-bg-blend);
+    border-left: 3px solid var(--color-bg-blend);
+    border-bottom: 3px inset var(--color-bg-blend);
+    border-right: 3px inset var(--color-bg-blend);
+    outline-offset: 60px;
+    color: var(--font);
+    padding: 1em;
     margin: 2em auto;
+    overflow: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: hidden;
 }
 
 article {
@@ -150,21 +146,4 @@ header > h1 {
 
 #index-posts-container li > * {
     display: inline;
-}
-
-/*
-Set a default theme based on user preference!
-*/
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: rgba(28, 28, 30);
-        --font: rgba(246, 246, 246);
-    }
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        --bg: rgb(244, 244, 246);
-        --font: rgb(28, 28, 28);
-    }
 }
