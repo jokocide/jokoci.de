@@ -211,8 +211,6 @@ all:
           ansible_ssh_private_key_file: example_absolute_path_to_ssh_private_key
 ```
 
-Now when I clone my project later down the road, it will be trivial to recall what files I need to create and populate with real information to get my playbooks working again. 
+Now when I clone my project later down the road, it will be easy to remember what files I need to create and populate with real information to get my playbooks working again. I just need to create a file with a name that matches the example file, but without the _example part, and then copy the data from the example to the real file and fill in the variables.
 
-Simply create a file with a name identical to the example file, but without the _example part, and then copy the data from the example to the real file and populate the variables with real data.
-
-I also feel it is worth mentioning [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html). This is a built-in tool that allows you to encrypt files that contain sensitive data. I personally do not use this tool, so refer to the documentation if you are interested in this solution.
+I also think I should mention [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html). This is a built-in tool that allows you to encrypt files that contain sensitive data. I personally do not use this tool, so I don't think I am qualified to give advice on using it.

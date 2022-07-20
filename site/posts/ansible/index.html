@@ -186,9 +186,8 @@ vars/private.yml
           ansible_connection: example_connection_type
           ansible_ssh_private_key_file: example_absolute_path_to_ssh_private_key
 </code></pre>
-<p>Now when I clone my project later down the road, it will be trivial to recall what files I need to create and populate with real information to get my playbooks working again.</p>
-<p>Simply create a file with a name identical to the example file, but without the _example part, and then copy the data from the example to the real file and populate the variables with real data.</p>
-<p>I also feel it is worth mentioning <a href="https://docs.ansible.com/ansible/latest/user_guide/vault.html">Ansible Vault</a>. This is a built-in tool that allows you to encrypt files that contain sensitive data. I personally do not use this tool, so refer to the documentation if you are interested in this solution.</p>
+<p>Now when I clone my project later down the road, it will be easy to remember what files I need to create and populate with real information to get my playbooks working again. I just need to create a file with a name that matches the example file, but without the _example part, and then copy the data from the example to the real file and fill in the variables.</p>
+<p>I also think I should mention <a href="https://docs.ansible.com/ansible/latest/user_guide/vault.html">Ansible Vault</a>. This is a built-in tool that allows you to encrypt files that contain sensitive data. I personally do not use this tool, so I don't think I am qualified to give advice on using it.</p>
 
     </article>
 </main>

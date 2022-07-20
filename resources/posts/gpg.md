@@ -13,7 +13,7 @@ some experience with the software already
 To begin, you need to create your keys.
 
 ```sh
-> gpg --full-gen-key
+gpg --full-gen-key
 ```
 
 Follow the prompts and your keys will be created and added to your keyring -- unless you have a reason not to, go with the defaults.
@@ -23,19 +23,19 @@ Follow the prompts and your keys will be created and added to your keyring -- un
 In our current directory, we have a text file called **message** that happens to contain a secret.
 
 ```sh
-> ls -l
+ls -l
 total 16
 -rw-r--r--  1 jkoenig  staff    22 Dec  4 09:33 message
 
-> cat message
+cat message
 37.2431° N, 115.7930° W
 ```
 
 We can use the **-r** and **-e** options to encrypt the file.
 
 ```sh
-> gpg -r jokocide@outlook.com -e message
-> ls -l
+gpg -r jokocide@outlook.com -e message
+ls -l
 total 24
 -rw-r--r--  1 jkoenig  staff    22 Dec  4 09:33 message
 -rw-r--r--  1 jkoenig  staff   488 Dec  4 09:37 message.gpg
@@ -51,7 +51,7 @@ so you will want to take steps to counter that.
 To decrypt our file and make it human readable again, the **-d** option is used.
 
 ```sh
-> gpg -d message.gpg
+gpg -d message.gpg
 
 gpg: encrypted with 3072-bit RSA key, ID xxxxxxxxxxxx, created 2020-12-02
 "Jon Koenig <jokocide@outlook.com>"

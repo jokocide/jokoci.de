@@ -47,21 +47,21 @@ introduction to this tool and encryption as a whole, so here is one that serves 
 some experience with the software already</p>
 <h2>Creating keys</h2>
 <p>To begin, you need to create your keys.</p>
-<pre><code class="language-sh">&gt; gpg --full-gen-key
+<pre><code class="language-sh">gpg --full-gen-key
 </code></pre>
 <p>Follow the prompts and your keys will be created and added to your keyring -- unless you have a reason not to, go with the defaults.</p>
 <h2>Encrypting</h2>
 <p>In our current directory, we have a text file called <strong>message</strong> that happens to contain a secret.</p>
-<pre><code class="language-sh">&gt; ls -l
+<pre><code class="language-sh">ls -l
 total 16
 -rw-r--r--  1 jkoenig  staff    22 Dec  4 09:33 message
 
-&gt; cat message
+cat message
 37.2431° N, 115.7930° W
 </code></pre>
 <p>We can use the <strong>-r</strong> and <strong>-e</strong> options to encrypt the file.</p>
-<pre><code class="language-sh">&gt; gpg -r jokocide@outlook.com -e message
-&gt; ls -l
+<pre><code class="language-sh">gpg -r jokocide@outlook.com -e message
+ls -l
 total 24
 -rw-r--r--  1 jkoenig  staff    22 Dec  4 09:33 message
 -rw-r--r--  1 jkoenig  staff   488 Dec  4 09:37 message.gpg
@@ -71,7 +71,7 @@ total 24
 so you will want to take steps to counter that.</p>
 <h2>Decrypting</h2>
 <p>To decrypt our file and make it human readable again, the <strong>-d</strong> option is used.</p>
-<pre><code class="language-sh">&gt; gpg -d message.gpg
+<pre><code class="language-sh">gpg -d message.gpg
 
 gpg: encrypted with 3072-bit RSA key, ID xxxxxxxxxxxx, created 2020-12-02
 &quot;Jon Koenig &lt;jokocide@outlook.com&gt;&quot;
